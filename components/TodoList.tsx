@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Todo as TodoType } from '../utils/types';
-import SearchBar from './searchBar';
+import SearchBar from './SearchBar';
 import Todo from './Todo';
 
 interface IndexProps {
@@ -40,10 +40,7 @@ const TodoList = (props: IndexProps) => {
         return !todo.completed && todo.item.includes(searchVal) ? true : false;
     }
   };
-  const getFilteredTodos = (todos: any) => {
-    const newTodos = todos.filter(comparator);
-    return newTodos;
-  };
+  const getFilteredTodos = (todos: any) => todos.filter(comparator);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
