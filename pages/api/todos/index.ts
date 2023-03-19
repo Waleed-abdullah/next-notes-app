@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../../utils/dbConnect';
 import { ResponseFuncs } from '../../../utils/types';
 import Todo from '@/models/Todo';
+import { todoValidator } from '@/validate/validators';
 
 const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
   //capture request method, we type it as a key of ResponseFunc to reduce typing later
@@ -30,9 +31,13 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
     POST: async (req: NextApiRequest, res: NextApiResponse) => {
       try {
         // console.log(req.body);
-        const todo = await Todo.create(req.body); // connect to database
-        console.log('created object', todo);
-        res.status(200).json({ success: true });
+        if (todoValidator(req.body)) {
+          const todo = await Todo.create(req.body); // connect to database
+          console.log('created object', todo);
+          res.status(200).json({ success: true });
+        } else {
+          return res.status(400).json({ success: false });
+        }
       } catch (error) {
         res.status(400).json({ success: false });
       }

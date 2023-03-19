@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../../utils/dbConnect';
 import { ResponseFuncs } from '../../../utils/types';
 import Todo from '@/models/Todo';
+import { todoValidator } from '@/validate/validators';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   await dbConnect();
@@ -25,11 +26,17 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // RESPONSE PUT REQUESTS
     PUT: async (req: NextApiRequest, res: NextApiResponse) => {
       try {
-        const todo = await Todo.findByIdAndUpdate(id, req.body, { new: true });
-        if (!todo) {
-          return res.status(404).json({ success: false });
+        if (todoValidator(req.body)) {
+          const todo = await Todo.findByIdAndUpdate(id, req.body, {
+            new: true,
+          });
+          if (!todo) {
+            return res.status(404).json({ success: false });
+          }
+          res.status(200).json({ success: true });
+        } else {
+          return res.status(400).json({ success: false });
         }
-        res.status(200).json({ success: true });
       } catch (error) {
         res.status(400).json({ success: false });
       }

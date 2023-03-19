@@ -3,6 +3,7 @@ import { FormEvent, FormEventHandler, useRef } from 'react';
 import { Todo } from '../../utils/types';
 import { useSession } from 'next-auth/react';
 import NavBar from '@/components/NavBar';
+import { todoValidator } from '@/validate/validators';
 
 // Define props
 interface CreateProps {
@@ -38,17 +39,21 @@ function Create(props: CreateProps) {
       return;
     }
 
-    // Make the API request
-    await fetch(props.url, {
-      method: 'post',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ ...todo }),
-    });
+    if (todoValidator(todo)) {
+      // Make the API request
+      await fetch(props.url, {
+        method: 'post',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...todo }),
+      });
 
-    // after api request, push back to main page
-    router.push('/homepage');
+      // after api request, push back to main page
+      router.push('/homepage');
+    } else {
+      return;
+    }
   };
   if (!session) {
     return (

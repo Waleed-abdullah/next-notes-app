@@ -2,6 +2,7 @@ import { Todo } from '../../utils/types';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import axios from 'axios';
+import { todoValidator } from '@/validate/validators';
 
 // Define Prop Interface
 interface ShowProps {
@@ -21,17 +22,19 @@ function Show(props: ShowProps) {
     if (!todo.completed) {
       // make copy of todo with completed set to true
       const newTodo: Todo = { ...todo, completed: true };
-      // make api call to change completed in database
-      await fetch(props.url + '/' + todo._id, {
-        method: 'put',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // send copy of todo with property
-        body: JSON.stringify(newTodo),
-      });
-      // once data is updated update state so ui matches without needed to refresh
-      setTodo(newTodo);
+      if (todoValidator(newTodo)) {
+        // make api call to change completed in database
+        await fetch(props.url + '/' + todo._id, {
+          method: 'put',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // send copy of todo with property
+          body: JSON.stringify(newTodo),
+        });
+        // once data is updated update state so ui matches without needed to refresh
+        setTodo(newTodo);
+      }
     }
     // if completed is already true this function won't do anything
   };
@@ -48,16 +51,21 @@ function Show(props: ShowProps) {
   const setShared = async () => {
     const isShared = todo.shared;
     const newTodo: Todo = { ...todo, shared: !isShared };
-    // make api call to change completed in database
-    await fetch(props.url + '/' + todo._id, {
-      method: 'put',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // send copy of todo with property
-      body: JSON.stringify(newTodo),
-    });
-    setTodo(newTodo);
+    console.log('setting shared', todoValidator(newTodo));
+    if (todoValidator(newTodo)) {
+      // make api call to change completed in database
+      await fetch(props.url + '/' + todo._id, {
+        method: 'put',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // send copy of todo with property
+        body: JSON.stringify(newTodo),
+      });
+      setTodo(newTodo);
+    } else {
+      throw Error('Invalid schema');
+    }
   };
 
   //return JSX

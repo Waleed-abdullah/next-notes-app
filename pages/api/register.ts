@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../utils/dbConnect';
 import User from '../../models/User';
 import bcrypt from 'bcrypt';
+import { userValidator } from '@/validate/validators';
 
 const validateEmail = (email: string): boolean => {
   const regEx = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
@@ -49,19 +50,26 @@ const handler = async function (req: NextApiRequest, res: NextApiResponse) {
   const hashedPassword = await bcrypt.hash(password, 12);
 
   // create new User on MongoDB
-  const newUser = new User({
+  const user = {
     email,
     hashedPassword,
-  });
+  };
 
-  newUser
-    .save()
-    .then(() =>
-      res.status(200).json({ msg: 'Successfuly created new User: ' + newUser })
-    )
-    .catch((err: string) =>
-      res.status(400).json({ error: "Error on '/api/register': " + err })
-    );
+  if (userValidator(user)) {
+    const newUser = new User(user);
+    (newUser as any)
+      .save()
+      .then(() =>
+        res
+          .status(200)
+          .json({ msg: 'Successfuly created new User: ' + newUser })
+      )
+      .catch((err: string) =>
+        res.status(400).json({ error: "Error on '/api/register': " + err })
+      );
+  } else {
+    return res.status(400).json({ error: 'Invalid user schema' });
+  }
 };
 
 export default handler;
