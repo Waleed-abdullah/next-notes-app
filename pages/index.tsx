@@ -12,6 +12,7 @@ function Index() {
     } else {
       router.push('/homepage');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
 

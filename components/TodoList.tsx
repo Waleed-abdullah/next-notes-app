@@ -1,13 +1,54 @@
 import Link from 'next/link';
+import { useState } from 'react';
 import { Todo as TodoType } from '../utils/types';
+import SearchBar from './SearchBar';
 import Todo from './Todo';
+import { searchContext } from '@/context/searchContext';
+import { useContext } from 'react';
 
 interface IndexProps {
   todos: Array<TodoType>;
 }
 
+enum Filter {
+  All = 'all',
+  Completed = 'completed',
+  Incomplete = 'incomplete',
+}
+
 const TodoList = (props: IndexProps) => {
   const { todos } = props;
+  const [filter, setFilter] = useState<Filter>(Filter.All);
+  // const [searchVal, setSearchVal] = useState<string>('');
+  const { searchString } = useContext(searchContext);
+
+  const changeFilter = (event: any) => {
+    const filterVal = event.target.value;
+    if (Filter.All === filterVal) {
+      setFilter(Filter.All);
+    } else if (Filter.Completed === filterVal) {
+      setFilter(Filter.Completed);
+    } else {
+      setFilter(Filter.Incomplete);
+    }
+  };
+
+  const comparator = (todo: any, idx: number): boolean => {
+    switch (filter) {
+      case Filter.All:
+        return todo.item.includes(searchString) ? true : false;
+      case Filter.Completed:
+        return todo.completed && todo.item.includes(searchString)
+          ? true
+          : false;
+      case Filter.Incomplete:
+        return !todo.completed && todo.item.includes(searchString)
+          ? true
+          : false;
+    }
+  };
+  const getFilteredTodos = (todos: any) => todos.filter(comparator);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
       <div className="h-100 h-100 w-full flex items-center justify-center font-sans">
@@ -17,8 +58,44 @@ const TodoList = (props: IndexProps) => {
               <span className="text-xl text-stone-500">Todo</span>List
             </h1>
           </div>
+          {/* setSearch={setSearchVal} */}
+          <SearchBar />
+          <div className="flex flex-row">
+            <h2 className="mt-6 mr-5">Filter: </h2>
+            <button
+              onClick={changeFilter}
+              value="all"
+              className={`flex-no-shrink p-2 border-2 rounded  text-black border-black
+               hover:text-white hover:bg-gray-700 m-5 ${
+                 filter === Filter.All ? 'bg-gray-700 text-white' : ''
+               }`}
+            >
+              All
+            </button>
+            <button
+              onClick={changeFilter}
+              value="completed"
+              className={`flex-no-shrink p-2 border-2 rounded  text-black border-black
+               hover:text-white hover:bg-gray-700 m-5 ${
+                 filter === Filter.Completed ? 'bg-gray-700 text-white' : ''
+               }`}
+            >
+              Completed
+            </button>
+            <button
+              onClick={changeFilter}
+              value="incomplete"
+              className={`flex-no-shrink p-2 border-2 rounded  text-black border-black
+               hover:text-white hover:bg-gray-700 m-5 ${
+                 filter === Filter.Incomplete ? 'bg-gray-700 text-white' : ''
+               }`}
+            >
+              Uncompleted
+            </button>
+          </div>
+          <div className="mb-4 justify-items-end"></div>
           <div className=" text-left">
-            {todos.map((todo: any) => (
+            {getFilteredTodos(todos).map((todo: any) => (
               <Todo
                 todoItem={todo.item}
                 isCompleted={todo.completed}

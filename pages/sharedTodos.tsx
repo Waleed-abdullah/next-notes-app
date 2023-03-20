@@ -2,6 +2,9 @@ import axios from 'axios';
 import useSWR from 'swr';
 import Loader from '@/components/Loader';
 import NavBar from '@/components/NavBar';
+import { useContext, useState } from 'react';
+import SearchBar from '@/components/SearchBar';
+import { searchContext } from '@/context/searchContext';
 
 const fetcher = (url: any) => {
   return axios.get(url).then((res) => res.data);
@@ -9,11 +12,15 @@ const fetcher = (url: any) => {
 
 const SharedTodos = () => {
   const { data: todos, error } = useSWR('/api/todos/getSharedTodos', fetcher);
+  // const [searchVal, setSearchVal] = useState<string>('');
+  const { searchString } = useContext(searchContext);
+
   if (!todos) {
     return <Loader />;
   }
 
-  console.log(todos);
+  const getFilteredTodos = (todos: any) =>
+    todos.filter((todo: any) => todo.item.includes(searchString));
   return (
     <>
       <NavBar />
@@ -25,8 +32,10 @@ const SharedTodos = () => {
                 Shared <span className="text-xl text-stone-500">Todo</span>List
               </h1>
             </div>
+            {/* setSearch={setSearchVal} */}
+            <SearchBar />
             <div className=" text-left">
-              {todos.map((todo: any) => (
+              {getFilteredTodos(todos).map((todo: any) => (
                 <div
                   key={todo._id}
                   className="flex mb-4 items-center border-b-black   border-b-2 mt-2"
