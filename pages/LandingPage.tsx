@@ -9,6 +9,7 @@ const LandingPage = () => {
   const passRef = useRef<HTMLInputElement>(null);
   let [validInput, setValidInput] = useState<boolean>(true);
   let [incorrectInfo, setIncorrectInfo] = useState<boolean>(false);
+  let [emailInUse, setEmailInUse] = useState<boolean>(false);
 
   const logIn = async () => {
     const email: any = emailRef.current!.value;
@@ -59,6 +60,7 @@ const LandingPage = () => {
         })
         .catch((error) => {
           console.log(error);
+          setEmailInUse(true);
         });
       console.log(res);
     }
@@ -99,6 +101,9 @@ const LandingPage = () => {
                 ) : null}
                 {incorrectInfo ? (
                   <div className=" text-red-600">Your info is incorrect</div>
+                ) : null}
+                {emailInUse ? (
+                  <div className=" text-red-600">Email already in use</div>
                 ) : null}
                 <button
                   className="border-2 border-black rounded-full px-12 py-2 inline-block font-semibold hover:bg-black hover:text-white"
