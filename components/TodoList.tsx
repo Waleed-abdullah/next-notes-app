@@ -57,24 +57,30 @@ const TodoList = (props: IndexProps) => {
             <button
               onClick={changeFilter}
               value="all"
-              className="flex-no-shrink p-2 border-2 rounded  text-black border-black
-               hover:text-white hover:bg-gray-700 m-5 "
+              className={`flex-no-shrink p-2 border-2 rounded  text-black border-black
+               hover:text-white hover:bg-gray-700 m-5 ${
+                 filter === Filter.All ? 'bg-gray-700 text-white' : ''
+               }`}
             >
               All
             </button>
             <button
               onClick={changeFilter}
               value="completed"
-              className="flex-no-shrink p-2 border-2 rounded  text-black border-black
-               hover:text-white hover:bg-gray-700 m-5 "
+              className={`flex-no-shrink p-2 border-2 rounded  text-black border-black
+               hover:text-white hover:bg-gray-700 m-5 ${
+                 filter === Filter.Completed ? 'bg-gray-700 text-white' : ''
+               }`}
             >
               Completed
             </button>
             <button
               onClick={changeFilter}
               value="incomplete"
-              className="flex-no-shrink p-2 border-2 rounded  text-black border-black
-               hover:text-white hover:bg-gray-700 m-5 "
+              className={`flex-no-shrink p-2 border-2 rounded  text-black border-black
+               hover:text-white hover:bg-gray-700 m-5 ${
+                 filter === Filter.Incomplete ? 'bg-gray-700 text-white' : ''
+               }`}
             >
               Uncompleted
             </button>
