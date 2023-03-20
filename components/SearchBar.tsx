@@ -1,8 +1,17 @@
-const SearchBar = (props: any) => {
-  const { setSearch } = props;
+import { useContext, useEffect } from 'react';
+import { searchContext } from '@/context/searchContext';
+
+const SearchBar = () => {
+  const { updateSearch } = useContext(searchContext);
   const changeSearchState = (event: any) => {
-    setSearch(event.target.value);
+    updateSearch!(event.target.value);
   };
+
+  useEffect(() => {
+    updateSearch!(''); // set already set context to '' to show all todos
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <form>
       <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">

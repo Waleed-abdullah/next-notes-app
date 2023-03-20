@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Todo as TodoType } from '../utils/types';
 import SearchBar from './SearchBar';
 import Todo from './Todo';
+import { searchContext } from '@/context/searchContext';
+import { useContext } from 'react';
 
 interface IndexProps {
   todos: Array<TodoType>;
@@ -17,7 +19,8 @@ enum Filter {
 const TodoList = (props: IndexProps) => {
   const { todos } = props;
   const [filter, setFilter] = useState<Filter>(Filter.All);
-  const [searchVal, setSearchVal] = useState<string>('');
+  // const [searchVal, setSearchVal] = useState<string>('');
+  const { searchString } = useContext(searchContext);
 
   const changeFilter = (event: any) => {
     const filterVal = event.target.value;
@@ -33,11 +36,15 @@ const TodoList = (props: IndexProps) => {
   const comparator = (todo: any, idx: number): boolean => {
     switch (filter) {
       case Filter.All:
-        return todo.item.includes(searchVal) ? true : false;
+        return todo.item.includes(searchString) ? true : false;
       case Filter.Completed:
-        return todo.completed && todo.item.includes(searchVal) ? true : false;
+        return todo.completed && todo.item.includes(searchString)
+          ? true
+          : false;
       case Filter.Incomplete:
-        return !todo.completed && todo.item.includes(searchVal) ? true : false;
+        return !todo.completed && todo.item.includes(searchString)
+          ? true
+          : false;
     }
   };
   const getFilteredTodos = (todos: any) => todos.filter(comparator);
@@ -51,7 +58,8 @@ const TodoList = (props: IndexProps) => {
               <span className="text-xl text-stone-500">Todo</span>List
             </h1>
           </div>
-          <SearchBar setSearch={setSearchVal} />
+          {/* setSearch={setSearchVal} */}
+          <SearchBar />
           <div className="flex flex-row">
             <h2 className="mt-6 mr-5">Filter: </h2>
             <button
