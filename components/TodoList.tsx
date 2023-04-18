@@ -5,6 +5,10 @@ import SearchBar from './SearchBar';
 import Todo from './Todo';
 import { searchContext } from '@/context/searchContext';
 import { useContext } from 'react';
+import app from '@/lib/firebase/initFirebase';
+import signInwithToken from '@/lib/firebase/signIntoFirebase';
+import { useSession } from 'next-auth/react';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 interface IndexProps {
   todos: Array<TodoType>;
@@ -18,6 +22,7 @@ enum Filter {
 
 const TodoList = (props: IndexProps) => {
   const { todos } = props;
+  const { data: session } = useSession();
   const [filter, setFilter] = useState<Filter>(Filter.All);
   // const [searchVal, setSearchVal] = useState<string>('');
   const { searchString } = useContext(searchContext);
@@ -31,6 +36,19 @@ const TodoList = (props: IndexProps) => {
     } else {
       setFilter(Filter.Incomplete);
     }
+  };
+
+  const getFirebaseData = async () => {
+    await signInwithToken({
+      token: session!.firebaseToken,
+    });
+
+    const db = getDatabase(app);
+    const projectsRef = ref(db, 'projects/' + '642dba63b5a7ae767d89962f');
+    onValue(projectsRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log(data);
+    });
   };
 
   const comparator = (todo: any, idx: number): boolean => {
@@ -54,6 +72,7 @@ const TodoList = (props: IndexProps) => {
       <div className="h-100 h-100 w-full flex items-center justify-center font-sans">
         <div className="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg text-center">
           <div className="mb-4">
+            <button onClick={getFirebaseData}>Get firebase data</button>
             <h1 className="text-black font-semibold">
               <span className="text-xl text-stone-500">Todo</span>List
             </h1>
