@@ -66,7 +66,7 @@ export default NextAuth({
       const firebaseToken = await generateFirebaseToken(
         '642dba63b5a7ae767d89962f'
       );
-      session.firebaseToken = firebaseToken;
+      session.firebaseToken = firebaseToken as string;
       return session;
     },
   },
