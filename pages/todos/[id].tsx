@@ -130,7 +130,10 @@ function Show(props: ShowProps) {
 // Define Server Side Props
 export async function getServerSideProps(context: any) {
   // fetch the todo, the param was received via context.query.id
-  const res = await fetch(process.env.API_URL + '/' + context.query.id);
+  console.log(process.env.API_URL + '/' + context.query.id);
+  const res = await fetch(
+    'http://localhost:3000/api/todos' + '/' + context.query.id
+  );
   const todo = await res.json();
 
   //return the serverSideProps the todo and the url from out env variables for frontend api calls

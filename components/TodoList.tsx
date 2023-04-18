@@ -8,7 +8,7 @@ import { useContext } from 'react';
 import app from '@/lib/firebase/initFirebase';
 import signInwithToken from '@/lib/firebase/signIntoFirebase';
 import { useSession } from 'next-auth/react';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
 
 interface IndexProps {
   todos: Array<TodoType>;
@@ -36,6 +36,19 @@ const TodoList = (props: IndexProps) => {
     } else {
       setFilter(Filter.Incomplete);
     }
+  };
+
+  const addFirebaseData = async () => {
+    await signInwithToken({
+      token: session!.firebaseToken,
+    });
+
+    const db = getDatabase(app);
+    set(ref(db, 'users/'), {
+      username: 'ok',
+      email: 'we,,',
+      profile_picture: 'sss',
+    });
   };
 
   const getFirebaseData = async () => {
@@ -73,6 +86,7 @@ const TodoList = (props: IndexProps) => {
         <div className="bg-white rounded shadow p-6 m-4 w-full lg:w-3/4 lg:max-w-lg text-center">
           <div className="mb-4">
             <button onClick={getFirebaseData}>Get firebase data</button>
+            <button onClick={addFirebaseData}>Add firebase data</button>
             <h1 className="text-black font-semibold">
               <span className="text-xl text-stone-500">Todo</span>List
             </h1>

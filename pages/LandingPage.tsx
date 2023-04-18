@@ -2,8 +2,13 @@ import { useRef, useState } from 'react';
 import { signIn, getProviders } from 'next-auth/react';
 import axios from 'axios';
 import Router, { useRouter } from 'next/router';
+import signInwithToken from '@/lib/firebase/signIntoFirebase';
+import { useSession } from 'next-auth/react';
+import { getDatabase, ref, set } from 'firebase/database';
+import app from '@/lib/firebase/initFirebase';
 
 const LandingPage = () => {
+  const { data: session } = useSession();
   const router = useRouter();
   const emailRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
